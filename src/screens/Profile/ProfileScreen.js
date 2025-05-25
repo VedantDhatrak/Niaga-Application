@@ -1,66 +1,29 @@
-
-// import React from 'react';
-// import { View, Text, StyleSheet } from 'react-native';
-
-// export default function ProfileScreen () {
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.text}>Profile</Text>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#fff',
-//   },
-//   text: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     color: 'blue',
-//   },
-// });
-
-
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
 import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
-
 
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   return (
     <ImageBackground
-      // source={require('../../assets/background.jpg')}
       source={require('../../../assets/background.jpg')}
       style={{ flex: 1 }}
       resizeMode="cover"
     >
-      {/* <StatusBar barStyle="light-content" backgroundColor="#000" /> */}
       <StatusBar barStyle="light-content" backgroundColor="#000" />
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={28} color="#fff" style={styles.titleIcon} />
         </TouchableOpacity>
-        {/* <Text style={styles.title}>HOME</Text> */}
       </View>
       <View style={styles.circle}>
-        {/* <Ionicons name="map-outline" size={24} style={styles.ion} /> */}
       </View>
 
       <View style={styles.container}>
-
-
-
-
         <TouchableOpacity style={styles.customButton}>
           <Text style={styles.buttonText}>Log-Out</Text>
         </TouchableOpacity>
@@ -89,12 +52,12 @@ const styles = StyleSheet.create({
     height: 150,
     width: 150, backgroundColor: 'black',
     borderRadius: 100, position: 'absolute',
-    zIndex:1,
-    top:10,
-    left:130,
+    zIndex: 1,
+    top: 10,
+    left: 130,
     // borderColor:'red',borderWidth:2
   },
- 
+
   customButton: {
     marginTop: 490,
     backgroundColor: '#FF3C00',
