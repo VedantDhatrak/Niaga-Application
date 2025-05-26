@@ -52,13 +52,11 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet } from 'react-native';
-import MainScreen from '../screens/MainScreen';
 import HomeScreen from '../screens/HomeScreen';
 import { Ionicons } from '@expo/vector-icons';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import FavouriteScreen from '../screens/FavouritesScreen';
 import CartScreen from '../screens/CartScreen';
-
 
 const Tab = createBottomTabNavigator();
 
@@ -70,7 +68,7 @@ export default function TabNavigator() {
         tabBarActiveTintColor: '#FE320A',
         tabBarInactiveTintColor: '#FFE4C4',
         tabBarStyle: {
-          backgroundColor: 'transparent', // Make tab bar background transparent
+          backgroundColor: 'transparent',
           position: 'absolute',
           bottom: 0,
           left: 0,
@@ -80,13 +78,12 @@ export default function TabNavigator() {
           height: 60,
           borderTopRightRadius: 40,
           borderTopLeftRadius: 40,
-          overflow: 'hidden', // Ensures border radius clips background image
-          paddingTop:5
+          overflow: 'hidden',
+          paddingTop: 5
         },
-        // 👇 The key line to set image as background
         tabBarBackground: () => (
           <Image
-            source={require('../../assets/background.jpg')} // 👈 Put your image here
+            source={require('../../assets/background.jpg')}
             style={StyleSheet.absoluteFillObject}
             resizeMode="cover"
           />
@@ -97,7 +94,7 @@ export default function TabNavigator() {
         },
       }}
     >
-            <Tab.Screen
+      <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
@@ -106,16 +103,6 @@ export default function TabNavigator() {
           ),
         }}
       />
-      <Tab.Screen
-        name="Main"
-        component={MainScreen}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="map-outline" size={24} color={color} />
-          ),
-        }}
-      />
-
       <Tab.Screen
         name="Whislist"
         component={FavouriteScreen}
@@ -134,7 +121,7 @@ export default function TabNavigator() {
           ),
         }}
       />
-            <Tab.Screen
+      <Tab.Screen
         name="Profile"
         component={ProfileScreen}
         options={{
@@ -144,7 +131,6 @@ export default function TabNavigator() {
         }}
       />
     </Tab.Navigator>
-    
   );
 }
 

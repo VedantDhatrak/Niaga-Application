@@ -40,7 +40,7 @@ const LandingScreen = ({ navigation }) => {
           <Text style={styles.tagText}>Dare</Text>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('TabNavigator')}>
           <Text style={styles.buttonText}>start shopping</Text>
         </TouchableOpacity>
       </View>

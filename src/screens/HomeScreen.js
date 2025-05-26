@@ -1,14 +1,27 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground,Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
-
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
-
-
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+
+  const handleBackPress = () => {
+    console.log('Back button pressed - attempting navigation');
+    try {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        })
+      );
+      console.log('Navigation reset to Main screen');
+    } catch (error) {
+      console.error('Navigation error:', error);
+    }
+  };
+
   return (
     <ImageBackground
       source={require('../../assets/background.jpg')}
@@ -18,12 +31,19 @@ const HomeScreen = () => {
       {/* <StatusBar barStyle="light-content" backgroundColor="#000" /> */}
       <StatusBar barStyle="light-content" backgroundColor="#000" />
 
-<View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-        <Ionicons name="arrow-back" size={28} color="#fff" style={styles.titleIcon} />
-      </TouchableOpacity>
-      <Text style={styles.title}>HOME</Text>
-</View>
+      <View style={styles.header}>
+        <Pressable 
+          onPress={handleBackPress}
+          style={({ pressed }) => [
+            styles.backButton,
+            pressed && styles.backButtonPressed
+          ]}
+          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+        >
+          <Ionicons name="arrow-back" size={28} color="#fff" />
+        </Pressable>
+        <Text style={styles.title}>HOME</Text>
+      </View>
               {/* <View style={styles.topBar}>
           <TouchableOpacity><Text style={styles.icon}>←</Text></TouchableOpacity>
           <View style={styles.icons}>
@@ -84,10 +104,24 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 40,
     // marginTop: 20,
   },
-  header:{flexDirection:"column", 
-    // backgroundColor:'green' 
+  header: {
+    flexDirection: "column",
+    paddingTop: 40,
+    paddingHorizontal: 20,
   },
-  titleIcon:{padding:10,position:'absolute'},
+  backButton: {
+    padding: 10,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    zIndex: 1,
+  },
+  backButtonPressed: {
+    opacity: 0.7,
+  },
+  titleIcon: {
+    padding: 10,
+  },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',

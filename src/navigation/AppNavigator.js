@@ -1,12 +1,39 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TabNavigator from './TabNavigator';
+import MainScreen from '../screens/MainScreen';
 
+const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
+  const onNavigationStateChange = (state) => {
+    console.log('Navigation State Changed:', state);
+  };
+
   return (
-    <NavigationContainer>
-      <TabNavigator />
+    <NavigationContainer onStateChange={onNavigationStateChange}>
+      <Stack.Navigator
+        initialRouteName="Main"
+        screenOptions={{
+          headerShown: false
+        }}
+      >
+        <Stack.Screen 
+          name="Main" 
+          component={MainScreen}
+          options={{
+            gestureEnabled: false
+          }}
+        />
+        <Stack.Screen 
+          name="TabNavigator" 
+          component={TabNavigator}
+          options={{
+            gestureEnabled: false
+          }}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
