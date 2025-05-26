@@ -1,32 +1,3 @@
-
-// import React from 'react';
-// import { View, Text, StyleSheet } from 'react-native';
-
-// export default function HomeScreen () {
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.text}>home</Text>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#fff',
-//   },
-//   text: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     color: 'blue',
-//   },
-// });
-
-
-
-
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground,Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
@@ -66,11 +37,11 @@ const HomeScreen = () => {
 
 
         <View style={styles.banner}>
-          <Text style={styles.bannerText}>BANNER</Text>
           <Image
-          source={require('../../assets/test.jpg')}
-          style={styles.kuchtobhi}
-          ></Image>
+            source={require('../../assets/images/mainBanner.webp')}
+            style={styles.bannerImage}
+            resizeMode="cover"
+          />
         </View>
 
         <View style={styles.tabs}>
@@ -140,15 +111,16 @@ const styles = StyleSheet.create({
   },
   banner: {
     backgroundColor: '#C4C4C4',
-    height: 100,
+    height: 200,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 20,
+    overflow: 'hidden',
   },
-  bannerText: {
-    fontWeight: 'bold',
-    fontSize: 16,
+  bannerImage: {
+    width: '100%',
+    height: '100%',
   },
   tabs: {
     flexDirection: 'row',
