@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image, Pressable } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
 
@@ -28,34 +28,21 @@ const HomeScreen = () => {
       style={{ flex: 1 }}
       resizeMode="cover"
     >
-      {/* <StatusBar barStyle="light-content" backgroundColor="#000" /> */}
       <StatusBar barStyle="light-content" backgroundColor="#000" />
 
       <View style={styles.header}>
-        <Pressable 
-          onPress={handleBackPress}
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && styles.backButtonPressed
-          ]}
-          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-        >
-          <Ionicons name="arrow-back" size={28} color="#fff" />
-        </Pressable>
-        <Text style={styles.title}>HOME</Text>
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={28} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Home</Text>
+          <TouchableOpacity>
+            <Ionicons name="home-outline" size={28} color="#fff" />
+          </TouchableOpacity>
+        </View>
       </View>
-              {/* <View style={styles.topBar}>
-          <TouchableOpacity><Text style={styles.icon}>←</Text></TouchableOpacity>
-          <View style={styles.icons}>
-            <Text style={styles.icon}>🛒</Text>
-            <Text style={styles.icon}>❤️</Text>
-            <Text style={styles.icon}>👤</Text>
-          </View>
-        </View> */}
 
       <View style={styles.container}>
-
-
         <View style={styles.banner}>
           <Image
             source={require('../../assets/images/mainBanner.webp')}
@@ -99,49 +86,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFE3C1',
-    padding: 20, 
-       borderTopLeftRadius: 40,
+    padding: 20,
+    borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    // marginTop: 20,
-  },
-  header: {
-    flexDirection: "column",
-    paddingTop: 40,
+    paddingTop: 20,
     paddingHorizontal: 20,
   },
-  backButton: {
-    padding: 10,
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    zIndex: 1,
+  header: {
+    paddingTop: 10,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
-  backButtonPressed: {
-    opacity: 0.7,
-  },
-  titleIcon: {
-    padding: 10,
-  },
-  topBar: {
+  headerContent: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor:'#FE320A',    padding: 20, marginTop: 20,
-       borderTopLeftRadius: 50,
-    borderTopRightRadius: 50
+    alignItems: 'center',
   },
-  title: {
-    fontSize: 45,
+  headerTitle: {
+    color: '#fff',
+    fontSize: 20,
     fontWeight: 'bold',
-    color:'#FE320A', textAlign:'center', marginTop:10,marginBottom:10
-  },
-  icons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  icon: {
-    fontSize: 18,
-    marginHorizontal: 5,
   },
   banner: {
     backgroundColor: '#C4C4C4',
@@ -149,7 +113,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 10,
     overflow: 'hidden',
   },
   bannerImage: {
@@ -172,7 +136,7 @@ const styles = StyleSheet.create({
   },
   products: {
     gap: 15,
-    height:200
+    height: 200
   },
   productCard: {
     width: 120,
@@ -193,12 +157,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom:50
+    marginBottom: 50
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },
-  kuchtobhi:{height:20,width:300},
+  kuchtobhi: { height: 20, width: 300 },
 });

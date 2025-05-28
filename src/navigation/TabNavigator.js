@@ -57,6 +57,9 @@ import { Ionicons } from '@expo/vector-icons';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import FavouriteScreen from '../screens/FavouritesScreen';
 import CartScreen from '../screens/CartScreen';
+import WelcomeScreen from '../screens/authentication/WelcomeScreen';
+import SignInScreen from '../screens/authentication/SignInScreen';
+import SignUpScreen from '../screens/authentication/SignUpScreen';
 
 const Tab = createBottomTabNavigator();
 

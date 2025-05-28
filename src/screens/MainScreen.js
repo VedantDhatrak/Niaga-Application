@@ -12,11 +12,9 @@ const LandingScreen = ({ navigation }) => {
     >
       <Text style={styles.title}>NIAGA</Text>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.profileIcon}>
-          <Text style={styles.icon}>👤</Text>
-        </TouchableOpacity>
 
-        <Text style={styles.headline}>Sneakers as unique as you{'\n'}Dare to be different{'\n'}Elevate your style</Text>
+
+        <Text style={styles.headline}>3D-Models as unique as you {'\n'}Elevate your thoughts{'\n'}Dare to be different</Text>
         <Text style={styles.description}>
           Step up your style game with sneakers that blend comfort, durability, and cutting-edge design. Whether you're hitting the gym or the streets, find the perfect pair to elevate your look and performance!
         </Text>
@@ -75,9 +73,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   headline: {
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: 'bold',
-    marginTop: 60,
+    marginTop: 0,
     lineHeight: 24, paddingVertical: 10,
   },
   description: {
