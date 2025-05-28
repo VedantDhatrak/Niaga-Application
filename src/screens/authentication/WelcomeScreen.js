@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     marginTop: '50%',
   },
   logo: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FE320A',
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   button: {
     alignSelf: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FE320A',
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 25,

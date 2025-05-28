@@ -7,11 +7,33 @@ import {
   TouchableOpacity,
   StyleSheet,
   ImageBackground,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
 
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await login(email, password);
+      navigation.navigate('Main');
+    } catch (error) {
+      Alert.alert('Error', error.message || 'Failed to sign in');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ImageBackground
@@ -33,6 +55,7 @@ const SignInScreen = ({ navigation }) => {
           value={email}
           onChangeText={setEmail}
           placeholderTextColor="#666"
+          autoCapitalize="none"
         />
         <TextInput
           style={styles.input}
@@ -43,8 +66,16 @@ const SignInScreen = ({ navigation }) => {
           placeholderTextColor="#666"
         />
 
-        <TouchableOpacity style={styles.signInButton} onPress={() => navigation.navigate('Main')}>
-          <Text style={styles.signInText}>SIGN IN</Text>
+        <TouchableOpacity 
+          style={styles.signInButton} 
+          onPress={handleSignIn}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.signInText}>SIGN IN</Text>
+          )}
         </TouchableOpacity>
 
         {/* <Text style={styles.orText}>or sign in with</Text> */}

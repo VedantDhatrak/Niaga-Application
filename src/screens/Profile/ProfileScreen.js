@@ -1,146 +1,150 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
 
-const ProfileScreen = () => {
-  const navigation = useNavigation();
+const DEFAULT_AVATAR = 'https://ui-avatars.com/api/?name=User&background=FE320A&color=fff&size=128';
 
-  const MenuItem = ({ icon, title, onPress }) => (
-    <TouchableOpacity style={styles.menuItem} onPress={onPress}>
-      <Ionicons name={icon} size={24} color="#333" />
-      <Text style={styles.menuText}>{title}</Text>
-      <Ionicons name="chevron-forward" size={24} color="#333" />
-    </TouchableOpacity>
-  );
+const ProfileScreen = ({ navigation }) => {
+    const { userInfo, logout } = useAuth();
 
-  return (
-    <ImageBackground
-      source={require('../../../assets/background.jpg')}
-      style={styles.background}
-      resizeMode="cover"
-    >
-      <StatusBar barStyle="light-content" backgroundColor="#000" />
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigation.navigate('Welcome');
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={28} color="#fff" />
-        </TouchableOpacity>
-      </View>
+    return (
+        <ScrollView style={styles.container} contentContainerStyle={{ alignItems: 'center', paddingBottom: 40 }}>
+            {/* Profile Image with Edit Icon */}
+            <View style={styles.avatarContainer}>
+                <Image
+                    source={{ uri: DEFAULT_AVATAR }}
+                    style={styles.avatar}
+                />
+                <TouchableOpacity style={styles.editIcon}>
+                    <Feather name="edit" size={20} color="#fff" />
+                </TouchableOpacity>
+            </View>
+            {/* Name */}
+            <Text style={styles.name}>{userInfo?.name || 'User'}</Text>
+            {/* Email */}
+            <View style={styles.emailBox}>
+                <Text style={styles.emailText}>{userInfo?.email}</Text>
+            </View>
 
-      {/* Profile Circle */}
-      <View style={styles.profileCircle}>
-        <Ionicons name="person" size={80} color="#fff" />
-      </View>
-
-      <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.menuSection}>
-            <MenuItem 
-              icon="person-outline" 
-              title="Profile" 
-              onPress={() => {}} 
-            />
-            <MenuItem 
-              icon="cart-outline" 
-              title="Orders" 
-              onPress={() => {}} 
-            />
-            <MenuItem 
-              icon="card-outline" 
-              title="Transactions" 
-              onPress={() => {}} 
-            />
-            <MenuItem 
-              icon="help-circle-outline" 
-              title="Help" 
-              onPress={() => {}} 
-            />
-          </View>
-
-          <TouchableOpacity 
-            style={styles.logoutButton} 
-            onPress={() => navigation.navigate('Welcome')}
-          >
-            <Text style={styles.logoutText}>LOG OUT</Text>
-          </TouchableOpacity>
+            {/* Card with menu options */}
+            <View style={styles.card}>
+                <MenuItem icon={<Feather name="edit-2" size={20} color="#FE320A" />} label="Edit Profile" onPress={() => {}} />
+                <MenuItem icon={<Feather name="lock" size={20} color="#FE320A" />} label="Add Pin" onPress={() => {}} />
+                <MenuItem icon={<Feather name="settings" size={20} color="#FE320A" />} label="Settings" onPress={() => {}} />
+                <MenuItem icon={<Feather name="user-plus" size={20} color="#FE320A" />} label="Invite a friend" onPress={() => {}} />
+                <View style={styles.divider} />
+                <MenuItem icon={<MaterialIcons name="logout" size={20} color="#FE320A" />} label="Logout" onPress={handleLogout} isLogout />
+            </View>
         </ScrollView>
-      </View>
-    </ImageBackground>
-  );
+    );
 };
 
+const MenuItem = ({ icon, label, onPress, isLogout }) => (
+    <TouchableOpacity style={[styles.menuItem, isLogout && styles.logoutItem]} onPress={onPress}>
+        <View style={styles.menuIcon}>{icon}</View>
+        <Text style={[styles.menuLabel, isLogout && styles.logoutLabel]}>{label}</Text>
+        <Ionicons name="chevron-forward" size={20} color={isLogout ? '#FE320A' : '#B0B0B0'} />
+    </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  header: {
-    paddingTop: 10,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  profileCircle: {
-    width: 150,
-    height: 150,
-    backgroundColor: '#000',
-    borderRadius: 75,
-    position: 'absolute',
-    top: 10,
-    alignSelf: 'center',
-    zIndex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#FFE3C1',
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
-    marginTop: 80,
-    paddingTop: 100,
-  },
-  menuSection: {
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    marginHorizontal: 20,
-    marginBottom: 20,
-    paddingVertical: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
+    container: {
+        flex: 1,
+        backgroundColor: '#FFE3C1',
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  menuText: {
-    flex: 1,
-    marginLeft: 15,
-    fontSize: 16,
-    color: '#333',
-  },
-  logoutButton: {
-    backgroundColor: '#FF3C00',
-    marginHorizontal: 20,
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  logoutText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
+    avatarContainer: {
+        marginTop: 40,
+        marginBottom: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    avatar: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderWidth: 3,
+        borderColor: '#fff',
+        backgroundColor: '#eee',
+    },
+    editIcon: {
+        position: 'absolute',
+        bottom: 0,
+        right: 10,
+        backgroundColor: '#FE320A',
+        borderRadius: 16,
+        padding: 6,
+        borderWidth: 2,
+        borderColor: '#fff',
+    },
+    name: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#222',
+        marginTop: 10,
+        marginBottom: 4,
+        textAlign: 'center',
+    },
+    emailBox: {
+        backgroundColor: '#EAF1FB',
+        borderRadius: 10,
+        paddingVertical: 6,
+        paddingHorizontal: 18,
+        alignSelf: 'center',
+        marginBottom: 18,
+    },
+    emailText: {
+        color: '#3A3A3A',
+        fontSize: 15,
+        textAlign: 'center',
+    },
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: 18,
+        width: '90%',
+        paddingVertical: 8,
+        marginTop: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.07,
+        shadowRadius: 8,
+        elevation: 2,
+    },
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 16,
+        paddingHorizontal: 18,
+    },
+    menuIcon: {
+        marginRight: 16,
+    },
+    menuLabel: {
+        flex: 1,
+        fontSize: 16,
+        color: '#222',
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#F0F0F0',
+        marginHorizontal: 18,
+    },
+    logoutItem: {
+        marginTop: 2,
+    },
+    logoutLabel: {
+        color: '#FE320A',
+        fontWeight: 'bold',
+    },
 });
 
 export default ProfileScreen;

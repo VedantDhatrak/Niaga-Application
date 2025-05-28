@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, 
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
+import ProductsScreen from './ProductsScreen';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -52,9 +53,15 @@ const HomeScreen = () => {
         </View>
 
         <View style={styles.tabs}>
-          <Text style={styles.tab}>NEW LAUNCH</Text>
-          <Text style={styles.tab}>PREMIUM</Text>
-          <Text style={styles.tab}>TOP SELLER</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('ProductsScreen')}>
+            <Text style={styles.tab}>NEW LAUNCH</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ProductsScreen')}>
+            <Text style={styles.tab}>PREMIUM</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ProductsScreen')}>
+            <Text style={styles.tab}>TOP SELLER</Text>
+          </TouchableOpacity>
         </View>
 
         <ScrollView horizontal contentContainerStyle={styles.products}>

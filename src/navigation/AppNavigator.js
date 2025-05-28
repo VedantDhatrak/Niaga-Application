@@ -6,6 +6,10 @@ import MainScreen from '../screens/MainScreen';
 import WelcomeScreen from '../screens/authentication/WelcomeScreen';
 import SignInScreen from '../screens/authentication/SignInScreen';
 import SignUpScreen from '../screens/authentication/SignUpScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
+import ProductsScreen from '../screens/ProductsScreen';
+import ProductDetailScreen from '../screens/ProductDetailScreen';
+import ProductZoomScreen from '../screens/ProductZoomScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +75,13 @@ export default function AppNavigator() {
           }}
         />
         <Stack.Screen 
+          name="Profile" 
+          component={ProfileScreen}
+          options={{
+            gestureEnabled: false
+          }}
+        />
+        <Stack.Screen 
           name="Checkout" 
           component={require('../screens/CheckoutScreen').default}
           options={{
@@ -89,6 +100,30 @@ export default function AppNavigator() {
           component={require('../screens/OrderSuccessScreen').default}
           options={{
             gestureEnabled: false
+          }}
+        />
+        <Stack.Screen 
+          name="ProductsScreen" 
+          component={ProductsScreen}
+          options={{
+            gestureEnabled: false,
+            headerShown: false
+          }}
+        />
+        <Stack.Screen 
+          name="ProductDetailScreen" 
+          component={ProductDetailScreen}
+          options={{
+            gestureEnabled: false,
+            headerShown: false
+          }}
+        />
+        <Stack.Screen 
+          name="ProductZoomScreen" 
+          component={ProductZoomScreen}
+          options={{
+            gestureEnabled: false,
+            headerShown: false
           }}
         />
       </Stack.Navigator>

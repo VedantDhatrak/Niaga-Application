@@ -1,9 +1,46 @@
 // SignUpScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  ImageBackground,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { useAuth } from '../../context/AuthContext';
 
 const SignUpScreen = ({ navigation }) => {
-  const [agree, setAgree] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
+
+  const handleSignUp = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await register(name, email, password);
+      navigation.navigate('Main');
+    } catch (error) {
+      Alert.alert('Error', error.message || 'Failed to sign up');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ImageBackground
@@ -21,41 +58,46 @@ const SignUpScreen = ({ navigation }) => {
           style={styles.input} 
           placeholder="Name" 
           placeholderTextColor="#666"
+          value={name}
+          onChangeText={setName}
         />
         <TextInput 
           style={styles.input} 
           placeholder="Email" 
           keyboardType="email-address" 
           placeholderTextColor="#666"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
         />
         <TextInput 
           style={styles.input} 
           placeholder="Password" 
           secureTextEntry 
           placeholderTextColor="#666"
+          value={password}
+          onChangeText={setPassword}
         />
         <TextInput 
           style={styles.input} 
           placeholder="Confirm password" 
           secureTextEntry 
           placeholderTextColor="#666"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
         />
 
-        <View style={styles.checkboxContainer}>
-          {/* <CheckBox value={agree} onValueChange={setAgree} /> */}
-          {/* <Text style={styles.checkboxLabel}> I understand T&Cs & policy.</Text> */}
-        </View>
-
-        <TouchableOpacity style={styles.signUpButton} onPress={() => navigation.navigate('Main')}>
-          <Text style={styles.signUpText}>SIGN UP</Text>
+        <TouchableOpacity 
+          style={styles.signUpButton} 
+          onPress={handleSignUp}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.signUpText}>SIGN UP</Text>
+          )}
         </TouchableOpacity>
-
-        {/* <Text style={styles.orText}>or sign up with</Text> */}
-        <View style={styles.socials}>
-          {/* <Image source={require('./assets/google.png')} style={styles.icon} />
-          <Image source={require('./assets/facebook.png')} style={styles.icon} />
-          <Image source={require('./assets/twitter.png')} style={styles.icon} /> */}
-        </View>
 
         <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
           <Text style={styles.footerText}>
