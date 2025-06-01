@@ -1,37 +1,120 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
+import { cartApi, checkToken } from '../services/api';
 
 const CartScreen = () => {
   const navigation = useNavigation();
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
 
-  const cartItems = [
-    { id: 1, name: 'Nike Air Max', price: '$199', quantity: 1, image: require('../../assets/background.jpg') },
-    { id: 2, name: 'Adidas Boost', price: '$179', quantity: 2, image: require('../../assets/background.jpg') },
-    { id: 3, name: 'Puma RS-X', price: '$159', quantity: 1, image: require('../../assets/background.jpg') },
-  ];
+  useFocusEffect(
+    React.useCallback(() => {
+      loadCart();
+    }, [])
+  );
+
+  useEffect(() => {
+    calculateTotal();
+  }, [cartItems]);
+
+  const loadCart = async () => {
+    try {
+      setLoading(true);
+      const hasToken = await checkToken();
+      console.log('Has token:', hasToken); // Debug log
+      
+      if (!hasToken) {
+        Alert.alert('Error', 'Please login to view cart');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Loading cart...'); // Debug log
+      const response = await cartApi.getAll();
+      console.log('Cart response:', response.data); // Debug log
+      setCartItems(response.data);
+    } catch (error) {
+      console.log('Cart error:', error.response?.status, error.response?.data); // Debug log
+      if (error.response?.status === 401) {
+        Alert.alert('Error', 'Please login to view cart');
+      } else {
+        Alert.alert('Error', error.response?.data?.message || 'Failed to load cart items');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateTotal = () => {
+    const sum = cartItems.reduce((acc, item) => {
+      return acc + (item.product.price * item.quantity);
+    }, 0);
+    setTotal(sum);
+  };
+
+  const handleUpdateQuantity = async (productId, newQuantity) => {
+    try {
+      await cartApi.updateQuantity(productId, newQuantity);
+      setCartItems(cartItems.map(item => 
+        item.product._id === productId 
+          ? { ...item, quantity: newQuantity }
+          : item
+      ));
+    } catch (error) {
+      if (error.response?.status === 401) {
+        Alert.alert('Error', 'Please login to update cart');
+      } else {
+        Alert.alert('Error', error.response?.data?.message || 'Failed to update quantity');
+      }
+    }
+  };
+
+  const handleRemoveItem = async (productId) => {
+    try {
+      await cartApi.remove(productId);
+      setCartItems(cartItems.filter(item => item.product._id !== productId));
+    } catch (error) {
+      if (error.response?.status === 401) {
+        Alert.alert('Error', 'Please login to remove items');
+      } else {
+        Alert.alert('Error', error.response?.data?.message || 'Failed to remove item from cart');
+      }
+    }
+  };
 
   const CartItem = ({ item }) => (
     <View style={styles.productCard}>
       <View style={styles.imageContainer}>
-        <Image source={item.image} style={styles.productImage} />
+        <Image source={{ uri: item.product.image }} style={styles.productImage} />
       </View>
       <View style={styles.productInfo}>
-        <Text style={styles.productName}>{item.name}</Text>
-        <Text style={styles.productPrice}>{item.price}</Text>
+        <Text style={styles.productName}>{item.product.name}</Text>
+        <Text style={styles.productPrice}>${item.product.price}</Text>
         <View style={styles.quantityContainer}>
-          <TouchableOpacity style={styles.quantityButton}>
-            <Ionicons name="remove" size={20} color="#FF3C00" />
+          <TouchableOpacity 
+            style={styles.quantityButton}
+            onPress={() => handleUpdateQuantity(item.product._id, item.quantity - 1)}
+            disabled={item.quantity <= 1}
+          >
+            <Ionicons name="remove" size={20} color={item.quantity <= 1 ? "#ccc" : "#FF3C00"} />
           </TouchableOpacity>
           <Text style={styles.quantityText}>{item.quantity}</Text>
-          <TouchableOpacity style={styles.quantityButton}>
+          <TouchableOpacity 
+            style={styles.quantityButton}
+            onPress={() => handleUpdateQuantity(item.product._id, item.quantity + 1)}
+          >
             <Ionicons name="add" size={20} color="#FF3C00" />
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity style={styles.deleteButton}>
+      <TouchableOpacity 
+        style={styles.deleteButton}
+        onPress={() => handleRemoveItem(item.product._id)}
+      >
         <Ionicons name="trash-outline" size={24} color="#FF3C00" />
       </TouchableOpacity>
     </View>
@@ -52,7 +135,6 @@ const CartScreen = () => {
             <Ionicons name="arrow-back" size={28} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Cart</Text>
-          {/* <View style={{ width: 28 }} /> Empty view for alignment */}
           <TouchableOpacity>
             <Ionicons name="cart-outline" size={28} color="#fff" />
           </TouchableOpacity>
@@ -62,21 +144,32 @@ const CartScreen = () => {
       {/* Main Content */}
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-          {cartItems.map((item) => (
-            <CartItem key={item.id} item={item} />
-          ))}
+          {loading ? (
+            <Text style={styles.loadingText}>Loading...</Text>
+          ) : cartItems.length === 0 ? (
+            <Text style={styles.emptyText}>Your cart is empty</Text>
+          ) : (
+            cartItems.map((item) => (
+              <CartItem key={item._id} item={item} />
+            ))
+          )}
         </ScrollView>
 
         {/* Total and Checkout */}
-        <View style={styles.checkoutContainer}>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalText}>Total:</Text>
-            <Text style={styles.totalAmount}>$537.00</Text>
+        {!loading && cartItems.length > 0 && (
+          <View style={styles.checkoutContainer}>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalText}>Total:</Text>
+              <Text style={styles.totalAmount}>${total.toFixed(2)}</Text>
+            </View>
+            <TouchableOpacity 
+              style={styles.checkoutButton} 
+              onPress={() => navigation.navigate('Checkout')}
+            >
+              <Text style={styles.checkoutText}>CHECKOUT</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.checkoutButton} onPress={() => navigation.navigate('Checkout')}>
-            <Text style={styles.checkoutText}>CHECKOUT</Text>
-          </TouchableOpacity>
-        </View>
+        )}
       </View>
     </ImageBackground>
   );
@@ -170,17 +263,13 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   checkoutContainer: {
-    // backgroundColor: '#fff',
-    // backgroundColor: 'green',
     padding: 20,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     shadowColor: '#000',
-
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
-    // marginBottom: 50,
     paddingBottom: 70,
   },
   totalRow: {
@@ -209,6 +298,18 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  loadingText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
   },
 });
 

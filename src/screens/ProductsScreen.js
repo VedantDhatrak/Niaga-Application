@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,9 +9,12 @@ import {
   Dimensions,
   Animated,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { productsApi, favoritesApi, cartApi, checkToken } from '../services/api';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
@@ -33,91 +36,143 @@ const filters = [
 //   { key: 'gender', label: 'Gender' },
 ];
 
-const products = [
+// Static products for testing
+const staticProducts = [
   {
-    id: '1',
-    name: 'Harness Unisex Long Sleeve',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
+    _id: '1',
+    name: 'Classic White T-Shirt',
+    price: 29.99,
+    image: 'https://i.ibb.co/tqYXnL6/ford-gt.png',
+    rating: 4.5,
+    category: 'shortsleeve',
+    description: 'A comfortable and stylish white t-shirt made from 100% cotton.',
+    scale: 'M',
+    brand: 'Nike',
+    period: '2023',
+    year: '2023',
+    country: 'USA',
+    discount: '10% off'
   },
   {
-    id: '2',
-    name: 'Harness Men Shirt',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
+    _id: '2',
+    name: 'Black Hoodie',
+    price: 49.99,
+    image: 'https://i.ibb.co/tqYXnL6/ford-gt.png',
+    rating: 4.8,
+    category: 'hoodies',
+    description: 'Warm and cozy black hoodie perfect for casual wear.',
+    scale: 'L',
+    brand: 'Adidas',
+    period: '2023',
+    year: '2023',
+    country: 'Germany',
+    discount: '15% off'
   },
   {
-    id: '3',
-    name: 'Harness Men Collar',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
+    _id: '3',
+    name: 'Blue Long Sleeve',
+    price: 39.99,
+    image: 'https://i.ibb.co/tqYXnL6/ford-gt.png',
+    rating: 4.3,
+    category: 'longsleeve',
+    description: 'Elegant blue long sleeve shirt for formal occasions.',
+    scale: 'S',
+    brand: 'Ralph Lauren',
+    period: '2023',
+    year: '2023',
+    country: 'UK',
+    discount: '5% off'
   },
   {
-    id: '4',
-    name: 'Harness Men Hoodie',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
-  },
-  {
-    id: '4',
-    name: 'Harness Men Hoodie',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
-  },
-  {
-    id: '4',
-    name: 'Harness Men Hoodie',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
-  },
-  {
-    id: '4',
-    name: 'Harness Men Hoodie',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
-  },
-  {
-    id: '4',
-    name: 'Harness Men Hoodie',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
-  },
-  {
-    id: '4',
-    name: 'Harness Men Hoodie',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
-  },
-  {
-    id: '4',
-    name: 'Harness Men Hoodie',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
-  },
-  {
-    id: '4',
-    name: 'Harness Men Hoodie',
-    price: '$2000',
-    rating: 4.9,
-    image: mainBanner,
-  },
+    _id: '4',
+    name: 'Striped Collar Shirt',
+    price: 45.99,
+    image: 'https://i.ibb.co/tqYXnL6/ford-gt.png',
+    rating: 4.6,
+    category: 'collar',
+    description: 'Classic striped collar shirt for a professional look.',
+    scale: 'M',
+    brand: 'Tommy Hilfiger',
+    period: '2023',
+    year: '2023',
+    country: 'USA',
+    discount: '20% off'
+  }
 ];
 
 const ProductsScreen = () => {
   const navigation = useNavigation();
-  const [selectedCategory, setSelectedCategory] = useState(categories[0].key);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [search, setSearch] = useState('');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [slideAnim] = useState(new Animated.Value(Dimensions.get('window').height));
+
+  useEffect(() => {
+    loadProducts();
+  }, [selectedCategory, search]);
+
+  const loadProducts = async () => {
+    try {
+      setLoading(true);
+      const params = {};
+      if (selectedCategory !== 'all') {
+        params.category = selectedCategory;
+      }
+      if (search) {
+        params.search = search;
+      }
+      console.log('Fetching products with params:', params); // Debug log
+      const response = await productsApi.getAll(params);
+      console.log('Products API response:', response.data); // Debug log
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error loading products:', error.response?.data || error.message); // Enhanced error logging
+      Alert.alert('Error', 'Failed to load products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddToFavorites = async (productId) => {
+    try {
+      const hasToken = await checkToken();
+      if (!hasToken) {
+        Alert.alert('Error', 'Please login to add to favorites');
+        return;
+      }
+      
+      await favoritesApi.add(productId);
+      Alert.alert('Success', 'Product added to favorites');
+    } catch (error) {
+      console.error('Add to favorites error:', error.response?.data || error.message);
+      if (error.response?.status === 401) {
+        Alert.alert('Error', 'Please login to add to favorites');
+      } else {
+        Alert.alert('Error', error.response?.data?.message || 'Failed to add to favorites');
+      }
+    }
+  };
+
+  const handleAddToCart = async (productId) => {
+    try {
+      const hasToken = await checkToken();
+      if (!hasToken) {
+        Alert.alert('Error', 'Please login to add to cart');
+        return;
+      }
+      
+      await cartApi.add(productId);
+      Alert.alert('Success', 'Product added to cart');
+    } catch (error) {
+      console.error('Add to cart error:', error.response?.data || error.message);
+      if (error.response?.status === 401) {
+        Alert.alert('Error', 'Please login to add to cart');
+      } else {
+        Alert.alert('Error', error.response?.data?.message || 'Failed to add to cart');
+      }
+    }
+  };
 
   React.useEffect(() => {
     Animated.timing(slideAnim, {
@@ -144,6 +199,38 @@ const ProductsScreen = () => {
   const handleProductPress = (item) => {
     navigation.navigate('ProductDetailScreen', { product: item });
   };
+
+  const renderProductCard = (product) => (
+    <TouchableOpacity
+      key={product._id}
+      style={styles.productCard}
+      onPress={() => handleProductPress(product)}
+    >
+      <Image source={{ uri: product.image }} style={styles.productImage} />
+      <View style={styles.productInfo}>
+        <Text style={styles.productName}>{product.name}</Text>
+        <Text style={styles.productPrice}>${product.price}</Text>
+        <View style={styles.ratingContainer}>
+          <Ionicons name="star" size={16} color="#FFD700" />
+          <Text style={styles.rating}>{product.rating}</Text>
+        </View>
+        <View style={styles.actionButtons}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.favoriteButton]}
+            onPress={() => handleAddToFavorites(product._id)}
+          >
+            <Ionicons name="heart-outline" size={20} color="#FF3C00" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.cartButton]}
+            onPress={() => handleAddToCart(product._id)}
+          >
+            <Ionicons name="cart-outline" size={20} color="#FF3C00" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <Animated.View style={[styles.animatedContainer, { transform: [{ translateY: slideAnim }] }]}>  
@@ -175,6 +262,12 @@ const ProductsScreen = () => {
 
       {/* Category Tabs */}
       <View style={styles.categoryRow}>
+        <TouchableOpacity
+          style={[styles.categoryTab, selectedCategory === 'all' && styles.categoryTabActive]}
+          onPress={() => setSelectedCategory('all')}
+        >
+          <Text style={[styles.categoryLabel, selectedCategory === 'all' && styles.categoryLabelActive]}>All</Text>
+        </TouchableOpacity>
         {categories.map(cat => (
           <TouchableOpacity
             key={cat.key}
@@ -192,28 +285,17 @@ const ProductsScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.productsGrid}>
-          {products.map((item) => (
-            <TouchableOpacity 
-              key={item.id} 
-              style={styles.card}
-              onPress={() => handleProductPress(item)}
-            >
-              <Image source={item.image} style={styles.productImg} />
-              <TouchableOpacity style={styles.heartBtn}>
-                <Ionicons name="heart-outline" size={20} color="#FE320A" />
-              </TouchableOpacity>
-              <Text style={styles.productName} numberOfLines={2}>{item.name}</Text>
-              <View style={styles.priceRow}>
-                <Text style={styles.price}>{item.price}</Text>
-                <View style={styles.ratingBox}>
-                  <Ionicons name="star" size={14} color="#FFD700" />
-                  <Text style={styles.rating}>{item.rating}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#FF3C00" />
+          </View>
+        ) : products.length === 0 ? (
+          <Text style={styles.emptyText}>No products found</Text>
+        ) : (
+          <View style={styles.productsGrid}>
+            {products.map(renderProductCard)}
+          </View>
+        )}
       </ScrollView>
     </Animated.View>
   );
@@ -390,6 +472,74 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+  },
+  loadingText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  productCard: {
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  productImage: {
+    width: '100%',
+    height: 200,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  productInfo: {
+    padding: 15,
+  },
+  productPrice: {
+    fontSize: 18,
+    color: '#FF3C00',
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  actionButton: {
+    padding: 10,
+    borderRadius: 8,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+  favoriteButton: {
+    backgroundColor: '#FFF0F0',
+  },
+  cartButton: {
+    backgroundColor: '#FFF0F0',
   },
 });
 

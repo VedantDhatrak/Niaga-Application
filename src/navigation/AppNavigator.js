@@ -7,6 +7,10 @@ import WelcomeScreen from '../screens/authentication/WelcomeScreen';
 import SignInScreen from '../screens/authentication/SignInScreen';
 import SignUpScreen from '../screens/authentication/SignUpScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import EditProfileScreen from '../screens/Profile/EditProfileScreen';
+import HelpSupportScreen from '../screens/Profile/HelpSupportScreen';
+import SettingsScreen from '../screens/Profile/SettingsScreen';
+import OrdersScreen from '../screens/Profile/OrdersScreen';
 import ProductsScreen from '../screens/ProductsScreen';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
 import ProductZoomScreen from '../screens/ProductZoomScreen';
@@ -77,6 +81,34 @@ export default function AppNavigator() {
         <Stack.Screen 
           name="Profile" 
           component={ProfileScreen}
+          options={{
+            gestureEnabled: false
+          }}
+        />
+        <Stack.Screen 
+          name="EditProfile" 
+          component={EditProfileScreen}
+          options={{
+            gestureEnabled: false
+          }}
+        />
+        <Stack.Screen 
+          name="HelpSupport" 
+          component={HelpSupportScreen}
+          options={{
+            gestureEnabled: false
+          }}
+        />
+        <Stack.Screen 
+          name="Settings" 
+          component={SettingsScreen}
+          options={{
+            gestureEnabled: false
+          }}
+        />
+        <Stack.Screen 
+          name="Orders" 
+          component={OrdersScreen}
           options={{
             gestureEnabled: false
           }}

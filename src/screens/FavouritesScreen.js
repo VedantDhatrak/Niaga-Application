@@ -1,28 +1,62 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
+import { favoritesApi } from '../services/api';
 
 const FavouritesScreen = () => {
   const navigation = useNavigation();
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const dummyProducts = [
-    { id: 1, name: 'Nike Air Max', price: '$199', image: require('../../assets/background.jpg') },
-    { id: 2, name: 'Adidas Boost', price: '$179', image: require('../../assets/background.jpg') },
-    { id: 3, name: 'Puma RS-X', price: '$159', image: require('../../assets/background.jpg') },
-  ];
+  useFocusEffect(
+    React.useCallback(() => {
+      loadFavorites();
+    }, [])
+  );
+
+  const loadFavorites = async () => {
+    try {
+      const response = await favoritesApi.getAll();
+      setFavorites(response.data);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        Alert.alert('Error', 'Please login to view favorites');
+      } else {
+        Alert.alert('Error', error.response?.data?.message || 'Failed to load favorites');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveFavorite = async (productId) => {
+    try {
+      await favoritesApi.remove(productId);
+      setFavorites(favorites.filter(fav => fav.product._id !== productId));
+    } catch (error) {
+      if (error.response?.status === 401) {
+        Alert.alert('Error', 'Please login to remove favorites');
+      } else {
+        Alert.alert('Error', error.response?.data?.message || 'Failed to remove from favorites');
+      }
+    }
+  };
 
   const ProductCard = ({ product }) => (
     <View style={styles.productCard}>
       <View style={styles.imageContainer}>
-        <Image source={product.image} style={styles.productImage} />
+        <Image source={{ uri: product.image }} style={styles.productImage} />
       </View>
       <View style={styles.productInfo}>
         <Text style={styles.productName}>{product.name}</Text>
-        <Text style={styles.productPrice}>{product.price}</Text>
+        <Text style={styles.productPrice}>${product.price}</Text>
       </View>
-      <TouchableOpacity style={styles.deleteButton}>
+      <TouchableOpacity 
+        style={styles.deleteButton}
+        onPress={() => handleRemoveFavorite(product._id)}
+      >
         <Ionicons name="trash-outline" size={24} color="#FF3C00" />
       </TouchableOpacity>
     </View>
@@ -52,9 +86,15 @@ const FavouritesScreen = () => {
       {/* Main Content */}
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {dummyProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {loading ? (
+            <Text style={styles.loadingText}>Loading...</Text>
+          ) : favorites.length === 0 ? (
+            <Text style={styles.emptyText}>No favorites yet</Text>
+          ) : (
+            favorites.map((favorite) => (
+              <ProductCard key={favorite._id} product={favorite.product} />
+            ))
+          )}
         </ScrollView>
       </View>
     </ImageBackground>
@@ -132,6 +172,18 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     padding: 8,
+  },
+  loadingText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
   },
 });
 

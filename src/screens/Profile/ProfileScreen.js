@@ -38,12 +38,33 @@ const ProfileScreen = ({ navigation }) => {
 
             {/* Card with menu options */}
             <View style={styles.card}>
-                <MenuItem icon={<Feather name="edit-2" size={20} color="#FE320A" />} label="Edit Profile" onPress={() => {}} />
-                <MenuItem icon={<Feather name="lock" size={20} color="#FE320A" />} label="Add Pin" onPress={() => {}} />
-                <MenuItem icon={<Feather name="settings" size={20} color="#FE320A" />} label="Settings" onPress={() => {}} />
-                <MenuItem icon={<Feather name="user-plus" size={20} color="#FE320A" />} label="Invite a friend" onPress={() => {}} />
+                <MenuItem 
+                    icon={<Feather name="edit-2" size={20} color="#FE320A" />} 
+                    label="Edit Profile" 
+                    onPress={() => navigation.navigate('EditProfile')} 
+                />
+                <MenuItem 
+                    icon={<Feather name="lock" size={20} color="#FE320A" />} 
+                    label="Help & Support" 
+                    onPress={() => navigation.navigate('HelpSupport')} 
+                />
+                <MenuItem 
+                    icon={<Feather name="settings" size={20} color="#FE320A" />} 
+                    label="Settings" 
+                    onPress={() => navigation.navigate('Settings')} 
+                />
+                <MenuItem 
+                    icon={<Feather name="shopping-bag" size={20} color="#FE320A" />} 
+                    label="Your Orders" 
+                    onPress={() => navigation.navigate('Orders')} 
+                />
                 <View style={styles.divider} />
-                <MenuItem icon={<MaterialIcons name="logout" size={20} color="#FE320A" />} label="Logout" onPress={handleLogout} isLogout />
+                <MenuItem 
+                    icon={<MaterialIcons name="logout" size={20} color="#FE320A" />} 
+                    label="Logout" 
+                    onPress={handleLogout} 
+                    isLogout 
+                />
             </View>
         </ScrollView>
     );

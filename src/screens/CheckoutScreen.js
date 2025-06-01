@@ -1,12 +1,53 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { ordersApi } from '../services/api';
 
 const CheckoutScreen = () => {
   const navigation = useNavigation();
-  const [address, setAddress] = useState('123 Main Street, City, Country');
+  const [address, setAddress] = useState('');
   const [selected, setSelected] = useState('card');
+  const [loading, setLoading] = useState(false);
+
+  const handleCheckout = async () => {
+    if (!address.trim()) {
+      Alert.alert('Error', 'Please enter your shipping address');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await ordersApi.create({
+        street: address,
+        city: 'Default City', // You might want to add more address fields
+        state: 'Default State',
+        zipCode: '00000',
+        country: 'Default Country'
+      });
+
+      Alert.alert(
+        'Success',
+        'Your order has been placed successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.navigate('Orders');
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      console.error('Checkout error:', error.response?.data || error.message);
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'Failed to process your order. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ImageBackground
@@ -21,6 +62,7 @@ const CheckoutScreen = () => {
         <Text style={styles.headerTitle}>Checkout</Text>
         <View style={{ width: 28 }} />
       </View>
+      
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text style={styles.sectionTitle}>Delivery Address</Text>
@@ -34,27 +76,47 @@ const CheckoutScreen = () => {
               multiline
             />
           </View>
+
           <Text style={styles.sectionTitle}>Payment Method</Text>
-          <TouchableOpacity style={[styles.card, selected === 'card' && styles.selected]} onPress={() => setSelected('card')}>
+          <TouchableOpacity 
+            style={[styles.card, selected === 'card' && styles.selected]} 
+            onPress={() => setSelected('card')}
+          >
             <Ionicons name="card-outline" size={24} color={selected === 'card' ? '#FE320A' : '#333'} />
             <Text style={styles.cardText}>Credit/Debit Card</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.card, selected === 'paypal' && styles.selected]} onPress={() => setSelected('paypal')}>
+          
+          <TouchableOpacity 
+            style={[styles.card, selected === 'paypal' && styles.selected]} 
+            onPress={() => setSelected('paypal')}
+          >
             <Ionicons name="logo-paypal" size={24} color={selected === 'paypal' ? '#FE320A' : '#333'} />
             <Text style={styles.cardText}>PayPal</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.card, selected === 'cod' && styles.selected]} onPress={() => setSelected('cod')}>
+          
+          <TouchableOpacity 
+            style={[styles.card, selected === 'cod' && styles.selected]} 
+            onPress={() => setSelected('cod')}
+          >
             <Ionicons name="cash-outline" size={24} color={selected === 'cod' ? '#FE320A' : '#333'} />
             <Text style={styles.cardText}>Cash on Delivery</Text>
           </TouchableOpacity>
+
           <Text style={styles.sectionTitle}>Order Summary</Text>
           <View style={styles.card}>
             <Text style={styles.cardText}>3 items</Text>
             <Text style={styles.cardText}>Total: $537.00</Text>
           </View>
         </ScrollView>
-        <TouchableOpacity style={styles.checkoutButton} onPress={() => navigation.navigate('OrderProcessing')}>
-          <Text style={styles.checkoutText}>PLACE ORDER</Text>
+        
+        <TouchableOpacity 
+          style={[styles.checkoutButton, loading && styles.checkoutButtonDisabled]} 
+          onPress={handleCheckout}
+          disabled={loading}
+        >
+          <Text style={styles.checkoutText}>
+            {loading ? 'PROCESSING...' : 'PLACE ORDER'}
+          </Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -62,7 +124,9 @@ const CheckoutScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  background: { flex: 1 },
+  background: {
+    flex: 1,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -127,6 +191,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
+  },
+  checkoutButtonDisabled: {
+    backgroundColor: '#ccc',
   },
   checkoutText: {
     color: '#fff',
