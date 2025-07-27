@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
 import { cartApi, checkToken } from '../services/api';
+import { showSuccessToast, showErrorToast } from '../utils/toast';
 
 const CartScreen = () => {
   const navigation = useNavigation();
@@ -28,7 +29,7 @@ const CartScreen = () => {
       console.log('Has token:', hasToken); // Debug log
       
       if (!hasToken) {
-        Alert.alert('Error', 'Please login to view cart');
+        showErrorToast('Please login to view cart');
         setLoading(false);
         return;
       }
@@ -40,9 +41,9 @@ const CartScreen = () => {
     } catch (error) {
       console.log('Cart error:', error.response?.status, error.response?.data); // Debug log
       if (error.response?.status === 401) {
-        Alert.alert('Error', 'Please login to view cart');
+        showErrorToast('Please login to view cart');
       } else {
-        Alert.alert('Error', error.response?.data?.message || 'Failed to load cart items');
+        showErrorToast(error.response?.data?.message || 'Failed to load cart items');
       }
     } finally {
       setLoading(false);
@@ -64,11 +65,12 @@ const CartScreen = () => {
           ? { ...item, quantity: newQuantity }
           : item
       ));
+      showSuccessToast('Quantity updated');
     } catch (error) {
       if (error.response?.status === 401) {
-        Alert.alert('Error', 'Please login to update cart');
+        showErrorToast('Please login to update cart');
       } else {
-        Alert.alert('Error', error.response?.data?.message || 'Failed to update quantity');
+        showErrorToast(error.response?.data?.message || 'Failed to update quantity');
       }
     }
   };
@@ -77,11 +79,12 @@ const CartScreen = () => {
     try {
       await cartApi.remove(productId);
       setCartItems(cartItems.filter(item => item.product._id !== productId));
+      showSuccessToast('Item removed from cart');
     } catch (error) {
       if (error.response?.status === 401) {
-        Alert.alert('Error', 'Please login to remove items');
+        showErrorToast('Please login to remove items');
       } else {
-        Alert.alert('Error', error.response?.data?.message || 'Failed to remove item from cart');
+        showErrorToast(error.response?.data?.message || 'Failed to remove item from cart');
       }
     }
   };

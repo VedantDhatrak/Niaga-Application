@@ -64,7 +64,7 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
 
-        <ScrollView horizontal contentContainerStyle={styles.products}>
+        {/* <ScrollView horizontal contentContainerStyle={styles.products}>
           <View style={styles.productCard}>
             <View style={styles.productImage} />
             <Text>Product name</Text>
@@ -77,9 +77,9 @@ const HomeScreen = () => {
             <Text>product price</Text>
             <Text>product description</Text>
           </View>
-        </ScrollView>
+        </ScrollView> */}
 
-        <TouchableOpacity style={styles.customButton}>
+        <TouchableOpacity style={styles.customButton} onPress={() => navigation.navigate('CustomModelRequestScreen')}>
           <Text style={styles.buttonText}>CUSTOM</Text>
         </TouchableOpacity>
       </View>

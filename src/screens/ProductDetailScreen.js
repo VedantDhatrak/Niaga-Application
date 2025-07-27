@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { productsApi, favoritesApi, cartApi } from '../services/api';
+import { showSuccessToast, showErrorToast } from '../utils/toast';
 
 const ProductDetailScreen = () => {
   const navigation = useNavigation();
@@ -22,7 +23,7 @@ const ProductDetailScreen = () => {
       const response = await productsApi.getById(route.params?.product?._id);
       setProduct(response.data);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load product details');
+      showErrorToast('Failed to load product details');
     } finally {
       setLoading(false);
     }
@@ -32,12 +33,12 @@ const ProductDetailScreen = () => {
     try {
       await favoritesApi.add(product._id);
       setIsFavorite(true);
-      Alert.alert('Success', 'Product added to favorites');
+      showSuccessToast('Product added to favorites');
     } catch (error) {
       if (error.response?.status === 401) {
-        Alert.alert('Error', 'Please login to add favorites');
+        showErrorToast('Please login to add favorites');
       } else {
-        Alert.alert('Error', error.response?.data?.message || 'Failed to add to favorites');
+        showErrorToast(error.response?.data?.message || 'Failed to add to favorites');
       }
     }
   };
@@ -45,12 +46,12 @@ const ProductDetailScreen = () => {
   const handleAddToCart = async () => {
     try {
       await cartApi.add(product._id, 1);
-      Alert.alert('Success', 'Product added to cart');
+      showSuccessToast('Product added to cart');
     } catch (error) {
       if (error.response?.status === 401) {
-        Alert.alert('Error', 'Please login to add to cart');
+        showErrorToast('Please login to add to cart');
       } else {
-        Alert.alert('Error', error.response?.data?.message || 'Failed to add to cart');
+        showErrorToast(error.response?.data?.message || 'Failed to add to cart');
       }
     }
   };
@@ -64,6 +65,7 @@ const ProductDetailScreen = () => {
   }
 
   return (
+    <ImageBackground source={require('../../assets/background.jpg')} style={styles.container}>
     <View style={styles.container}>
       {/* Upper Card */}
       <View style={styles.upperCard}>
@@ -132,17 +134,18 @@ const ProductDetailScreen = () => {
         </TouchableOpacity>
       </View>
     </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d1b2a',
+    backgroundColor: 'transparent',
     padding: 10,
   },
   upperCard: {
-    backgroundColor: '#f4c28f',
+    backgroundColor: '#FFE3C1',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     alignItems: 'center',
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   lowerCard: {
-    backgroundColor: '#1b263b',
+    backgroundColor: 'transparent',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     padding: 15,
@@ -234,13 +237,14 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   cartButton: {
-    backgroundColor: '#f4c28f',
+    // backgroundColor: '#f4c28f',
+    backgroundColor: '#FFE3C1',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderRadius: 10,
     padding: 12,
-    marginTop: 10,
+    marginTop: 130,
   },
   cartText: {
     fontWeight: 'bold',

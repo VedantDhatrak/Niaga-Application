@@ -15,6 +15,7 @@ import {
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { productsApi, favoritesApi, cartApi, checkToken } from '../services/api';
+import { showSuccessToast, showErrorToast } from '../utils/toast';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
@@ -138,18 +139,18 @@ const ProductsScreen = () => {
     try {
       const hasToken = await checkToken();
       if (!hasToken) {
-        Alert.alert('Error', 'Please login to add to favorites');
+        showErrorToast('Please login to add to favorites');
         return;
       }
       
       await favoritesApi.add(productId);
-      Alert.alert('Success', 'Product added to favorites');
+      showSuccessToast('Product added to favorites');
     } catch (error) {
       console.error('Add to favorites error:', error.response?.data || error.message);
       if (error.response?.status === 401) {
-        Alert.alert('Error', 'Please login to add to favorites');
+        showErrorToast('Please login to add to favorites');
       } else {
-        Alert.alert('Error', error.response?.data?.message || 'Failed to add to favorites');
+        showErrorToast(error.response?.data?.message || 'Failed to add to favorites');
       }
     }
   };
@@ -158,18 +159,18 @@ const ProductsScreen = () => {
     try {
       const hasToken = await checkToken();
       if (!hasToken) {
-        Alert.alert('Error', 'Please login to add to cart');
+        showErrorToast('Please login to add to cart');
         return;
       }
       
       await cartApi.add(productId);
-      Alert.alert('Success', 'Product added to cart');
+      showSuccessToast('Product added to cart');
     } catch (error) {
       console.error('Add to cart error:', error.response?.data || error.message);
       if (error.response?.status === 401) {
-        Alert.alert('Error', 'Please login to add to cart');
+        showErrorToast('Please login to add to cart');
       } else {
-        Alert.alert('Error', error.response?.data?.message || 'Failed to add to cart');
+        showErrorToast(error.response?.data?.message || 'Failed to add to cart');
       }
     }
   };
@@ -251,17 +252,17 @@ const ProductsScreen = () => {
       </View>
 
       {/* Filter Row */}
-      <View style={styles.filterRow}>
+      {/* <View style={styles.filterRow}>
         {filters.map(f => (
           <TouchableOpacity key={f.key} style={styles.filterChip}>
             <Text style={styles.filterChipText}>{f.label}</Text>
             <Ionicons name="chevron-down" size={14} color="#FE320A" style={{ marginLeft: 2 }} />
           </TouchableOpacity>
         ))}
-      </View>
+      </View> */}
 
       {/* Category Tabs */}
-      <View style={styles.categoryRow}>
+      {/* <View style={styles.categoryRow}>
         <TouchableOpacity
           style={[styles.categoryTab, selectedCategory === 'all' && styles.categoryTabActive]}
           onPress={() => setSelectedCategory('all')}
@@ -278,7 +279,7 @@ const ProductsScreen = () => {
             <Text style={[styles.categoryLabel, selectedCategory === cat.key && styles.categoryLabelActive]}>{cat.label}</Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </View> */}
 
       {/* Products Grid in ScrollView */}
       <ScrollView 

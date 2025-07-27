@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StatusBar } from 'react-native';
 import { favoritesApi } from '../services/api';
+import { showErrorToast, showSuccessToast      } from '../utils/toast';
 
 const FavouritesScreen = () => {
   const navigation = useNavigation();
@@ -22,9 +23,9 @@ const FavouritesScreen = () => {
       setFavorites(response.data);
     } catch (error) {
       if (error.response?.status === 401) {
-        Alert.alert('Error', 'Please login to view favorites');
+        showErrorToast('Please login to view favorites');
       } else {
-        Alert.alert('Error', error.response?.data?.message || 'Failed to load favorites');
+        showErrorToast(error.response?.data?.message || 'Failed to load favorites');
       }
     } finally {
       setLoading(false);
@@ -35,11 +36,12 @@ const FavouritesScreen = () => {
     try {
       await favoritesApi.remove(productId);
       setFavorites(favorites.filter(fav => fav.product._id !== productId));
+      showSuccessToast('Item removed from favorites');
     } catch (error) {
       if (error.response?.status === 401) {
-        Alert.alert('Error', 'Please login to remove favorites');
+        showErrorToast('Please login to remove favorites');
       } else {
-        Alert.alert('Error', error.response?.data?.message || 'Failed to remove from favorites');
+        showErrorToast(error.response?.data?.message || 'Failed to remove from favorites');
       }
     }
   };

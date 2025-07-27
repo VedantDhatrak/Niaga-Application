@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { ordersApi } from '../services/api';
+import { showSuccessToast, showErrorToast } from '../utils/toast';
 
 const CheckoutScreen = () => {
   const navigation = useNavigation();
@@ -12,7 +13,7 @@ const CheckoutScreen = () => {
 
   const handleCheckout = async () => {
     if (!address.trim()) {
-      Alert.alert('Error', 'Please enter your shipping address');
+      showErrorToast('Please enter your shipping address');
       return;
     }
 
@@ -26,24 +27,11 @@ const CheckoutScreen = () => {
         country: 'Default Country'
       });
 
-      Alert.alert(
-        'Success',
-        'Your order has been placed successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              navigation.navigate('Orders');
-            }
-          }
-        ]
-      );
+      showSuccessToast('Your order has been placed successfully!');
+      navigation.navigate('Orders');
     } catch (error) {
       console.error('Checkout error:', error.response?.data || error.message);
-      Alert.alert(
-        'Error',
-        error.response?.data?.message || 'Failed to process your order. Please try again.'
-      );
+      showErrorToast(error.response?.data?.message || 'Failed to process your order. Please try again.');
     } finally {
       setLoading(false);
     }

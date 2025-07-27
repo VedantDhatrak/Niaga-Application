@@ -14,6 +14,8 @@ import OrdersScreen from '../screens/Profile/OrdersScreen';
 import ProductsScreen from '../screens/ProductsScreen';
 import ProductDetailScreen from '../screens/ProductDetailScreen';
 import ProductZoomScreen from '../screens/ProductZoomScreen';
+import CustomModelRequestScreen from '../screens/CustomModel';
+import HomeScreen from '../screens/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,127 +39,136 @@ export default function AppNavigator() {
             gestureEnabled: false
           }}
         /> */}
-           <Stack.Navigator
+      <Stack.Navigator
         initialRouteName="Welcome"
         screenOptions={{
           headerShown: false
         }}
       >
-        <Stack.Screen 
-          name="Welcome" 
+        <Stack.Screen
+          name="Welcome"
           component={WelcomeScreen}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="SignIn" 
+        <Stack.Screen
+          name="SignIn"
           component={SignInScreen}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="SignUp" 
+        <Stack.Screen
+          name="SignUp"
           component={SignUpScreen}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="Main" 
+        <Stack.Screen
+          name="Main"
           component={MainScreen}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="TabNavigator" 
+        <Stack.Screen
+          name="TabNavigator"
           component={TabNavigator}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="Profile" 
+        <Stack.Screen
+          name="Profile"
           component={ProfileScreen}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="EditProfile" 
+        <Stack.Screen
+          name="EditProfile"
           component={EditProfileScreen}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="HelpSupport" 
+        <Stack.Screen
+          name="HelpSupport"
           component={HelpSupportScreen}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="Settings" 
+        <Stack.Screen
+          name="Settings"
           component={SettingsScreen}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="Orders" 
+        <Stack.Screen
+          name="Orders"
           component={OrdersScreen}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="Checkout" 
+        <Stack.Screen
+          name="Checkout"
           component={require('../screens/CheckoutScreen').default}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="OrderProcessing" 
+        <Stack.Screen
+          name="OrderProcessing"
           component={require('../screens/OrderProcessingScreen').default}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="OrderSuccess" 
+        <Stack.Screen
+          name="OrderSuccess"
           component={require('../screens/OrderSuccessScreen').default}
           options={{
             gestureEnabled: false
           }}
         />
-        <Stack.Screen 
-          name="ProductsScreen" 
+        <Stack.Screen
+          name="ProductsScreen"
           component={ProductsScreen}
           options={{
             gestureEnabled: false,
             headerShown: false
           }}
         />
-        <Stack.Screen 
-          name="ProductDetailScreen" 
+        <Stack.Screen
+          name="ProductDetailScreen"
           component={ProductDetailScreen}
           options={{
             gestureEnabled: false,
             headerShown: false
           }}
         />
-        <Stack.Screen 
-          name="ProductZoomScreen" 
+        <Stack.Screen
+          name="ProductZoomScreen"
           component={ProductZoomScreen}
           options={{
             gestureEnabled: false,
             headerShown: false
           }}
         />
+        <Stack.Screen
+          name="CustomModelRequestScreen"
+          component={CustomModelRequestScreen}
+          options={{
+            gestureEnabled: false,
+            headerShown: false
+          }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
